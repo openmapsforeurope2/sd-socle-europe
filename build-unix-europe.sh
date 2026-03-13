@@ -1,0 +1,48 @@
+#!/bin/sh
+set -e
+
+NB_PROC=`grep processor /proc/cpuinfo | wc -l`
+NB_PROC=$(( $NB_PROC - 2))
+if [ $NB_PROC -lt 1 ]
+then
+    NB_PROC=1
+fi
+
+cmake -S . -B $CONFIG \
+      -G "Unix Makefiles" \
+      -DCMAKE_BUILD_TYPE=$CONFIG \
+      -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+      -DIgnSocle_WITH_CXX11=ON \
+      -DBUILD_SHARED_LIBS=ON \
+      -Wno-dev \
+      -DCMAKE_INSTALL_PREFIX=$IGN_SOCLE_DIR \
+      -DCMAKE_MODULE_PATH=$CMAKE_MODULE_PATH \
+      -DIgnSocle_TEST_COVERAGE=OFF \
+      -DIgnSocle_BUILD_MODULE_TESTS=OFF \
+      -DIgnSocle_BUILD_EXAMPLES=OFF \
+      -DIgnSocle_BUILD_CLASSIFICATION_EXTENSION=OFF \
+      -DIgnSocle_WITH_OPENCV=OFF \
+      -DIgnSocle_BUILD_COMPUTEDTM_EXTENSION=OFF \
+      -DIgnSocle_BUILD_GTS_EXTENSION=OFF \
+      -DIgnSocle_BUILD_INTERPOLATION_EXTENSION=OFF \
+      -DIgnSocle_BUILD_OSSATURE_EXTENSION=OFF \
+      -DIgnSocle_BUILD_RECO3D_EXTENSION=OFF \
+      -DIgnSocle_BUILD_SCILAB_EXTENSION=OFF \
+      -DIgnSocle_BUILD_SEGMENTATION_EXTENSION=OFF \
+      -DIgnSocle_BUILD_SHEWCHUK_EXTENSION=OFF \
+      -DIgnSocle_BUILD_SPARSE_SOLVER_EXTENSION=OFF \
+      -DIgnSocle_BUILD_XTOOL2_EXTENSION=OFF \
+      -DIgnSocle_BUILD_CGAL_EXTENSION=ON \
+      -DIgnSocle_WITHOUT_GPAO_DATAMODEL=ON \
+      -DIgnSocle_WITHOUT_GPAO=ON \
+      -DIgnSocle_WITHOUT_GEODESY=ON \
+      -DIgnSocle_WITHOUT_ORIENTATION=ON \
+      -DIgnSocle_WITHOUT_IMAGE=ON \
+      -DIgnSocle_WITHOUT_ALTIMETRY=ON \
+      -DIgnSocle_WITHOUT_PHOTOGRAMMETRY=ON \
+      -DIgnSocle_WITHOUT_RADIOMETRY=ON \
+      -DIgnSocle_WITHOUT_AERO=ON \
+      -DIgnSocle_WITHOUT_LIB3D=ON
+cmake --build $CONFIG -j$NB_PROC
+cmake --install $CONFIG
+rm -rf $CONFIG

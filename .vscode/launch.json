@@ -1,0 +1,34 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+        "name": "(gdb) Pipe Launch",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "/usr/local/src/sd-socle/bin/unittest-IgnSocle_graphd",
+        "cwd": "/usr/local/src/sd-socle/",
+        "args": [],
+        "stopAtEntry": true,
+        "environment": [{ "name": "config", "value": "Debug" }],
+        "externalConsole": true,
+        "sourceFileMap": {
+            "/usr/local/src/sd-socle/src":"${workspaceRoot}/sd-socle/src",
+            "/usr/local/src/sd-socle/tests":"${workspaceRoot}/sd-socle/tests",
+            "/usr/local/src/sd-socle/example":"${workspaceRoot}/sd-socle/example",
+            "/usr/local/src/sd-socle/include":"${workspaceRoot}/sd-socle/include"
+        },
+        "pipeTransport": {
+            "debuggerPath": "/usr/bin/gdb",
+            "pipeProgram": "docker",
+            "pipeArgs": ["exec", "-i", "sd-socle-europe-test_container", "sh", "-c"],
+            "pipeCwd": "${workspaceRoot}"
+        },
+        "MIMode": "gdb",
+        "setupCommands": [{
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+        }]
+    }, ]
+}
