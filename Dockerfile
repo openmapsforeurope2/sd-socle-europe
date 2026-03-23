@@ -17,6 +17,7 @@ RUN git clone --branch mborne --recurse-submodules \
 
 # DEBUG
 COPY ./CMakeLists.txt $IGN_SOCLE_DIR/CMakeLists.txt
+COPY ./CMakeLists_cgal.txt $IGN_SOCLE_DIR/extension/cgal/src/CMakeLists.txt
 
 ENV IGN_DATA=$IGN_SOCLE_DIR/data
 

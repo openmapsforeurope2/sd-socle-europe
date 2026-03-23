@@ -1,0 +1,104 @@
+#-- compilation du module CGAL
+
+set(MODULE_NAME "${${PROJECT_NAME}_PROJECT_EXTENSION}")	
+set(${PROJECT_NAME}_MODULE_NAME "${PROJECT_EXTENSION_NAME}")	
+
+#------------------------------------------------------------------------------------
+#-- dependances du module
+#------------------------------------------------------------------------------------
+SET (DEPENDENCIES    
+	${PROJECT_NAME}_graph
+	${PROJECT_NAME}_feature
+	${PROJECT_NAME}_geometry
+	${PROJECT_NAME}_transform
+	${PROJECT_NAME}_math
+	${PROJECT_NAME}_numeric
+	${PROJECT_NAME}_data
+	${PROJECT_NAME}_tools
+	${PROJECT_NAME}_core
+	Geos
+	CGAL
+	GMP
+	MPFR
+	Boost
+)
+
+include_directories( ${${${PROJECT_NAME}_MODULE_NAME}_INCLUDE_DIRS})
+
+#-- repertoire temporaire de compilation de ce projet cmake
+link_directories(${${PROJECT_NAME}_BINARY_DIR}/src/${MODULE_NAME})		
+
+#------------------------------------------------------------------------------------
+#-- compilation de la lib
+#------------------------------------------------------------------------------------
+set(SRC_PATH "${${PROJECT_NAME}_ROOT}/extension/${MODULE_NAME}/src/ign/")
+file( GLOB_RECURSE ${${PROJECT_NAME}_MODULE_NAME}_ALL_SRC ${SRC_PATH}*.cpp )
+
+set(HDR_PATH "${${PROJECT_NAME}_ROOT}/extension/${MODULE_NAME}/include/ign/")
+file( GLOB_RECURSE ${${PROJECT_NAME}_MODULE_NAME}_ALL_HEADER ${HDR_PATH}*.h  ${HDR_PATH}*.hpp )
+
+add_library(
+	${${${PROJECT_NAME}_MODULE_NAME}_LIBRARY}
+	${${${PROJECT_NAME}_MODULE_NAME}_ALL_HEADER}
+	${${${PROJECT_NAME}_MODULE_NAME}_ALL_SRC}
+)
+
+# Forcer l'option rounding pour CGAL
+target_compile_options(${${${PROJECT_NAME}_MODULE_NAME}_LIBRARY}
+    PUBLIC
+        -frounding-math
+        -fno-fast-math
+)
+
+# Ajouter le define pour CGAL + C++17 rétrocompatibilité
+target_compile_features(${${${PROJECT_NAME}_MODULE_NAME}_LIBRARY}    PRIVATE    cxx_std_17)
+
+if ( BUILD_SHARED_LIBS )
+	target_link_libraries(  ${${${PROJECT_NAME}_MODULE_NAME}_LIBRARY}
+                ${PROJECT_NAME}_graph
+                ${PROJECT_NAME}_feature
+                ${PROJECT_NAME}_geometry
+                ${PROJECT_NAME}_transform
+                ${PROJECT_NAME}_math
+                ${PROJECT_NAME}_numeric
+                ${PROJECT_NAME}_data
+                ${PROJECT_NAME}_tools
+                ${PROJECT_NAME}_core
+	)
+    
+    if( IGN_WITH_GEOS )
+        target_link_libraries( ${${${PROJECT_NAME}_MODULE_NAME}_LIBRARY}
+            ${Geos_LIBRARIES}
+        )
+    endif()
+    
+    target_link_libraries( ${${${PROJECT_NAME}_MODULE_NAME}_LIBRARY}
+        ${CGAL_LIBRARIES}
+        ${GMP_LIBRARIES}
+        ${MPFR_LIBRARIES}
+        ${Boost_LIBRARIES}
+    )
+
+    if (EXTRA_LIBS)
+        foreach(EXTRA_LIB ${EXTRA_LIBS})
+            target_link_libraries(${${${PROJECT_NAME}_MODULE_NAME}_LIBRARY} ${EXTRA_LIB} )
+        endforeach()
+    endif()
+endif()
+
+
+#installation de la bibliotheque
+install(
+	TARGETS
+	${${${PROJECT_NAME}_MODULE_NAME}_LIBRARY}
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+	BUNDLE DESTINATION lib
+)
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/extension/${MODULE_NAME}/include/ign DESTINATION extension/${MODULE_NAME}/include FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+
+
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
