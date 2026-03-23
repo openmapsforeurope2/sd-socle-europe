@@ -15,6 +15,9 @@ ENV IGN_SOCLE_DIR=/usr/local/src/sd-socle
 RUN git clone --branch mborne --recurse-submodules \
     http://gitlab.forge-idi.ign.fr/socle/sd-socle $IGN_SOCLE_DIR
 
+# DEBUG
+COPY ./CMakeLists.txt $IGN_SOCLE_DIR/CMakeLists.txt
+
 ENV IGN_DATA=$IGN_SOCLE_DIR/data
 
 WORKDIR $IGN_SOCLE_DIR
