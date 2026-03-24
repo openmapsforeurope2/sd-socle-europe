@@ -259,19 +259,19 @@ GeosLinearRingPtr	GeosIO::newGeosLinearRing( LineString const& lineString )
 ///
 GeosPolygonPtr  GeosIO::newGeosPolygon( ign::geometry::Polygon const& polygon )
 {
-    std::vector< geos::geom::LinearRing* >* interiorsRingsGeos = new std::vector< geos::geom::LinearRing* >();
+    std::vector< geos::geom::LinearRing* > interiorsRingsGeos;
 
 	//geos 3.3 make checks
 	for ( size_t i = 0; i < polygon.numInteriorRing(); ++i )
 	{
 		GeosLinearRingPtr ring = newGeosLinearRing( polygon.interiorRingN(i) );
 		IGN_SAFE_MODE_ASSERT( ring->getGeometryTypeId() == geos::geom::GEOS_LINEARRING );
-		interiorsRingsGeos->push_back( GEOS_RAW_PTR_RELEASE(ring) );
+		interiorsRingsGeos.push_back( GEOS_RAW_PTR_RELEASE(ring) );
 	}
     
     GeosLinearRingPtr    exteriorRingGeos (newGeosLinearRing(polygon.exteriorRing()));
 
-    GeosPolygonPtr pg (_geometryFactory->createPolygon(*GEOS_RAW_PTR_RELEASE(exteriorRingGeos),*interiorsRingsGeos));
+    GeosPolygonPtr pg (_geometryFactory->createPolygon(*GEOS_RAW_PTR_RELEASE(exteriorRingGeos), interiorsRingsGeos));
 
     return pg;
 }
