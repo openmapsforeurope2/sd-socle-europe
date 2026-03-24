@@ -223,11 +223,18 @@ GeosLineStringPtr  GeosIO::newGeosLineString( LineString const& lineString )
     return _geometryFactory->createLineString(coords);
 }
 
+static bool printed = false;
+
 ///
 ///
 ///
 GeosLinearRingPtr	GeosIO::newGeosLinearRing( LineString const& lineString )
 {
+	if (!printed) {
+		std::cout << "DEBUG_NEW_RING_VERSION_2" << std::endl;
+		printed = true;
+	}
+	
 #ifdef GEOS_NO_UNIQUE_PTR
 	geos::geom::CoordinateArraySequence* coords = new geos::geom::CoordinateArraySequence();
 	for ( size_t i = 0; i < lineString.numPoints(); ++i ){
