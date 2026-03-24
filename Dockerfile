@@ -18,6 +18,9 @@ RUN git clone --branch mborne --recurse-submodules \
 # DEBUG
 COPY ./CMakeLists.txt $IGN_SOCLE_DIR/CMakeLists.txt
 COPY ./CMakeLists_cgal.txt $IGN_SOCLE_DIR/extension/cgal/src/CMakeLists.txt
+COPY ./Geometry.cpp $IGN_SOCLE_DIR/src/ign/geometry/Geometry.cpp
+COPY ./Geometry.h $IGN_SOCLE_DIR/include/ign/geometry/Geometry.h
+COPY ./GeosIO.cpp $IGN_SOCLE_DIR/src/ign/geometry/io/GeosIO.cpp
 
 ENV IGN_DATA=$IGN_SOCLE_DIR/data
 
