@@ -243,14 +243,14 @@ GeosLinearRingPtr	GeosIO::newGeosLinearRing( LineString const& lineString )
 		coords->add(c);
 	}
 #else
-    auto coords = std::make_unique<geos::geom::CoordinateArraySequence>();
+    geos::geom::CoordinateArraySequence coords;
     for ( size_t i = 0; i < lineString.numPoints(); ++i ){
         GeosCoordinate c;
         geosCoordinateFromPoint(lineString.pointN(i),c);
-        coords->add(c);
+        coords.add(c);
     }
 #endif
-    GeosLinearRingPtr ls (_geometryFactory->createLinearRing(std::move(coords)));
+    GeosLinearRingPtr ls (_geometryFactory->createLinearRing(coords));
 	return ls;
 }
 
@@ -269,9 +269,9 @@ GeosPolygonPtr  GeosIO::newGeosPolygon( ign::geometry::Polygon const& polygon )
 		interiorsRingsGeos.push_back( GEOS_RAW_PTR_RELEASE(ring) );
 	}
     
-    GeosLinearRingPtr    exteriorRingGeos (newGeosLinearRing(polygon.exteriorRing()));
+    GeosLinearRingPtr exteriorRingGeos = newGeosLinearRing(polygon.exteriorRing());
 
-    GeosPolygonPtr pg (_geometryFactory->createPolygon(*GEOS_RAW_PTR_RELEASE(exteriorRingGeos), interiorsRingsGeos));
+    GeosPolygonPtr pg (_geometryFactory->createPolygon(*GEOS_RAW_PTR(exteriorRingGeos), interiorsRingsGeos));
 
     return pg;
 }
