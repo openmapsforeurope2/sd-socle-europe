@@ -3,6 +3,8 @@
 # =========================
 FROM condaforge/miniforge3:latest AS build
 
+ARG BUILD_MODE=full
+
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
       git \
@@ -43,8 +45,9 @@ COPY ./build-unix-europe.sh .
 ENV CONFIG=Release
 RUN ./build-unix-europe.sh
 
-ENV CONFIG=Debug
-RUN ./build-unix-europe.sh
+RUN if [ "$BUILD_MODE" != "release" ]; then \
+        export CONFIG=Debug && ./build-unix-europe.sh ; \
+    fi
 
 RUN find $CONDA_PREFIX -name "*.a" -delete \ 
  && find $CONDA_PREFIX -name "*.pyc" -delete \ 
