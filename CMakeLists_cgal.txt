@@ -50,6 +50,11 @@ target_compile_options(${${${PROJECT_NAME}_MODULE_NAME}_LIBRARY}
         -fno-fast-math
 )
 
+target_compile_definitions(${${${PROJECT_NAME}_MODULE_NAME}_LIBRARY}
+    PUBLIC
+        CGAL_DISABLE_ROUNDING_MATH_CHECK
+)
+
 # Ajouter le define pour CGAL + C++17 rétrocompatibilité
 target_compile_features(${${${PROJECT_NAME}_MODULE_NAME}_LIBRARY}    PRIVATE    cxx_std_17)
 
