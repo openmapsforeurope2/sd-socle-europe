@@ -48,6 +48,8 @@ RUN ./build-unix-europe.sh
 RUN if [ "$BUILD_MODE" != "release" ]; then \
         export CONFIG=Debug && ./build-unix-europe.sh ; \
     fi
+# voir si on peut ecrire a la place:
+# CONFIG=Debug ./build-unix-europe.sh ; \
 
 RUN find $CONDA_PREFIX -name "*.a" -delete \ 
  && find $CONDA_PREFIX -name "*.pyc" -delete \ 

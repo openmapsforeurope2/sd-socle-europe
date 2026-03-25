@@ -167,7 +167,7 @@ GeosGeometryPtr	GeosIO::newGeosEmptyGeometry()
 ///
 ///
 ///
-void               GeosIO::geosCoordinateFromPoint( Point const& point, GeosCoordinate& coords )
+void   GeosIO::geosCoordinateFromPoint( Point const& point, GeosCoordinate& coords )
 {
 	//mborne 18/04/2012 : le snap de force sur la grille est supprime,
 	// il pose des soucis sur certaines geometries. Il convient de l'appeler manuellement.
@@ -208,19 +208,19 @@ GeosLineStringPtr  GeosIO::newGeosLineString( LineString const& lineString )
 
     for ( size_t i = 0; i < lineString.numPoints(); ++i ){
         GeosCoordinate c;
-        geosCoordinateFromPoint(lineString.pointN(i),c);
+        geosCoordinateFromPoint(lineString.pointN(i), c);
         coords->add(c);
     }
 #else
-    geos::geom::CoordinateArraySequence coords;
+	std::unique_ptr<geos::geom::CoordinateArraySequence> coords;
 
     for ( size_t i = 0; i < lineString.numPoints(); ++i ){
         GeosCoordinate c;
-        geosCoordinateFromPoint(lineString.pointN(i),c);
-        coords.add(c);
+        geosCoordinateFromPoint(lineString.pointN(i), c);
+        coords->add(c);
     }
 #endif
-    return _geometryFactory->createLineString(coords);
+    return _geometryFactory->createLineString(std::move(coords));
 }
 
 static bool printed = false;
@@ -231,7 +231,7 @@ static bool printed = false;
 GeosLinearRingPtr	GeosIO::newGeosLinearRing( LineString const& lineString )
 {
 	if (!printed) {
-		std::cout << "DEBUG_NEW_RING_VERSION_2" << std::endl;
+		std::cout << "DEBUG_NEW_RING_VERSION_3" << std::endl;
 		printed = true;
 	}
 	
@@ -239,18 +239,18 @@ GeosLinearRingPtr	GeosIO::newGeosLinearRing( LineString const& lineString )
 	geos::geom::CoordinateArraySequence* coords = new geos::geom::CoordinateArraySequence();
 	for ( size_t i = 0; i < lineString.numPoints(); ++i ){
         GeosCoordinate c;
-		geosCoordinateFromPoint(lineString.pointN(i),c);
+		geosCoordinateFromPoint(lineString.pointN(i), c);
 		coords->add(c);
 	}
 #else
-    geos::geom::CoordinateArraySequence coords;
+    std::unique_ptr<geos::geom::CoordinateArraySequence> coords;
     for ( size_t i = 0; i < lineString.numPoints(); ++i ){
         GeosCoordinate c;
-        geosCoordinateFromPoint(lineString.pointN(i),c);
-        coords.add(c);
+        geosCoordinateFromPoint(lineString.pointN(i), c);
+        coords->add(c);
     }
 #endif
-    GeosLinearRingPtr ls (_geometryFactory->createLinearRing(coords));
+    GeosLinearRingPtr ls (_geometryFactory->createLinearRing(std::move(coords)));
 	return ls;
 }
 
@@ -266,12 +266,12 @@ GeosPolygonPtr  GeosIO::newGeosPolygon( ign::geometry::Polygon const& polygon )
 	{
 		GeosLinearRingPtr ring = newGeosLinearRing( polygon.interiorRingN(i) );
 		IGN_SAFE_MODE_ASSERT( ring->getGeometryTypeId() == geos::geom::GEOS_LINEARRING );
-		interiorsRingsGeos.push_back( GEOS_RAW_PTR_RELEASE(ring) );
+		interiorsRingsGeos.push_back( ring );
 	}
     
     GeosLinearRingPtr exteriorRingGeos = newGeosLinearRing(polygon.exteriorRing());
 
-    GeosPolygonPtr pg (_geometryFactory->createPolygon(*GEOS_RAW_PTR(exteriorRingGeos), interiorsRingsGeos));
+    GeosPolygonPtr pg (_geometryFactory->createPolygon(std::move(exteriorRingGeos), std::move(interiorsRingsGeos)));
 
     return pg;
 }
