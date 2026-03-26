@@ -17,13 +17,6 @@ ENV IGN_SOCLE_DIR=/usr/local/src/sd-socle
 RUN git clone --branch mborne --recurse-submodules \
     http://gitlab.forge-idi.ign.fr/socle/sd-socle $IGN_SOCLE_DIR
 
-# DEBUG
-COPY ./CMakeLists.txt $IGN_SOCLE_DIR/CMakeLists.txt
-COPY ./CMakeLists_cgal.txt $IGN_SOCLE_DIR/extension/cgal/src/CMakeLists.txt
-COPY ./Geometry.cpp $IGN_SOCLE_DIR/src/ign/geometry/Geometry.cpp
-COPY ./Geometry.h $IGN_SOCLE_DIR/include/ign/geometry/Geometry.h
-COPY ./GeosIO.cpp $IGN_SOCLE_DIR/src/ign/geometry/io/GeosIO.cpp
-
 ENV IGN_DATA=$IGN_SOCLE_DIR/data
 
 WORKDIR $IGN_SOCLE_DIR
@@ -46,10 +39,8 @@ ENV CONFIG=Release
 RUN ./build-unix-europe.sh
 
 RUN if [ "$BUILD_MODE" != "release" ]; then \
-        export CONFIG=Debug && ./build-unix-europe.sh ; \
+        CONFIG=Debug ./build-unix-europe.sh ; \
     fi
-# voir si on peut ecrire a la place:
-# CONFIG=Debug ./build-unix-europe.sh ; \
 
 RUN find $CONDA_PREFIX -name "*.a" -delete \ 
  && find $CONDA_PREFIX -name "*.pyc" -delete \ 
