@@ -14,7 +14,7 @@ RUN apt-get update \
 
 ENV IGN_SOCLE_DIR=/usr/local/src/sd-socle
 
-RUN git clone --branch mborne --recurse-submodules \
+RUN git clone --branch dev --recurse-submodules \
     http://gitlab.forge-idi.ign.fr/socle/sd-socle $IGN_SOCLE_DIR
 
 ENV IGN_DATA=$IGN_SOCLE_DIR/data
